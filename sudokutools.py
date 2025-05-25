@@ -77,20 +77,25 @@ def valid(board, pos, num):
     return True
 
 def solve(board):
-    empty = find_empty(board)
-
-    if not empty:
-        return True
-
-    for num in range(1, 10):
-        if valid(board, empty, num):
-            board[empty[0]][empty[1]] = num
-
-            if solve(board):
-                return True
-            board[empty[0]][empty[1]] = 0
-
-    return False
+    # Pre-compute empty cells
+    empty_cells = [(i, j) for i in range(9) for j in range(9) if board[i][j] == 0]
+    
+    def solve_helper(index):
+        # If we've filled all empty cells, we're done
+        if index >= len(empty_cells):
+            return True
+            
+        row, col = empty_cells[index]
+        for num in range(1, 10):
+            if valid(board, (row, col), num):
+                board[row][col] = num
+                if solve_helper(index + 1):
+                    return True
+                board[row][col] = 0
+                
+        return False
+    
+    return solve_helper(0)
 
 if __name__ == "__main__":
     board = generate_board()
